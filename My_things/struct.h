@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#pragma pack(push, 1)
 #pragma once
+#pragma pack(push, 1)
+
 
 typedef struct{
     unsigned short signature; // тип файла, должен быть равен 0x4D42
@@ -28,9 +29,9 @@ typedef struct{
 } BitmapInfoHeader; // это по факту третья версия БМП, тк поля аналогичные
 
 typedef struct{
-    unsigned char b;
-    unsigned char g;
     unsigned char r;
+    unsigned char g;
+    unsigned char b;
 } RGB;
 
 typedef struct{
@@ -40,3 +41,14 @@ typedef struct{
 } BMP;
 
 #pragma pack(pop)
+
+
+typedef struct Point{
+    int x1;
+    int y1;
+} Point;
+
+typedef struct Line{
+    Point p1;
+    Point p2;
+} Line;

@@ -1,7 +1,7 @@
-all: main.o input_bmp.o rgb_filter.o replace_color.o generate_bmp.o copy_reflection.o
-	gcc main.o input_bmp.o rgb_filter.o replace_color.o generate_bmp.o  copy_reflection.o -o main
+all: main.o input_bmp.o rgb_filter.o replace_color.o generate_bmp.o copy_reflection.o draw.o
+	gcc main.o input_bmp.o rgb_filter.o replace_color.o generate_bmp.o copy_reflection.o draw.o -o main
 
-main.o: main.c struct.h input_bmp.h rgb_filter.h replace_color.h copy_reflection.h
+main.o: main.c struct.h input_bmp.h rgb_filter.h replace_color.h copy_reflection.h draw.h
 	gcc -c main.c
 
 input_bmp.o: input_bmp.c struct.h input_bmp.h
@@ -16,8 +16,11 @@ replace_color.o: replace_color.c replace_color.h struct.h
 generate_bmp.o: struct.h generate_bmp.c generate_bmp.h
 	gcc -c generate_bmp.c
 
-copy_reflection.o: struct.h copy_reflection.c copy_reflection.h
+copy_reflection.o: struct.h copy_reflection.c copy_reflection.h draw.h
 	gcc -c copy_reflection.c
+
+draw.o: struct.h draw.h draw.c
+	gcc -c draw.c
 
 clean:
 	rm -rf *.o
