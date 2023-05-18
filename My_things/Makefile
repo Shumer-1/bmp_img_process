@@ -1,4 +1,5 @@
-all: main.o input_bmp.o rgb_filter.o replace_color.o generate_bmp.o copy_reflection.o draw.o
+f_all: all clean
+all: main.o input_bmp.o rgb_filter.o replace_color.o generate_bmp.o copy_reflection.o draw.o 
 	gcc main.o input_bmp.o rgb_filter.o replace_color.o generate_bmp.o copy_reflection.o draw.o -o main
 
 main.o: main.c struct.h input_bmp.h rgb_filter.h replace_color.h copy_reflection.h draw.h
