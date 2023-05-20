@@ -7,11 +7,16 @@
 #include "draw.h"
 #include <getopt.h>
 #include <unistd.h>
+#include <ctype.h>
 
 
 void printHelp(){
     printf("So, general provisions. First you need to enter the name of the program, \nthen the short or long expressions indicated below. Commands must be typed on a line. Thank you. \nAnd all commands must have one of the main specificator: C, f, F, R\n\n");
+    printf("The origin of the coordinate system is in the lower right corner. That is, the point with coordinates (0,0) is the bottom right point.\n");
+    printf("\nPlease enter correct coordinates. If the coordinates are incorrect, a hint will appear on the screen\n");
 
+    printf("The following are the flags required to specify a job. Enter them in this format ./main -h or ./main -f R/255\n");
+    
     printf("-h or --help - to read this message)\n");
     printf("-I or --input - to open file\n");
     printf("-S or --save - to save file\n");
@@ -27,7 +32,7 @@ void printHelp(){
     printf("-F or --replace - old and new colors in format R/G/B/R/G/B (of course, R, G, B are integer in range 0-255\n");
 
     printf("\n\tTo reflect a given area:\n\n");
-    printf("-R or --reflect - coordinates of line points and area points in format /X1/Y1/X2/Y2/X3/Y3/X4/Y4/X5/X6/\n");
+    printf("-R or --reflect - coordinates of line points and area points in format X1/Y1/X2/Y2/X3/Y3/X4/Y4/X5/X6\n");
 };
 
 int isNum(char* str){
@@ -53,6 +58,7 @@ typedef struct{
     int err; // нормально - 0, ошибка - 1
     char* filename;
     char* save_filename;
+    int flag_command; // 0 - copy, 1 - reflect, 2 - replace, 3 - change
     // reflection
     Line r_l; // ось отражения
     Point r_p1; // первая точка (top left)
@@ -88,10 +94,14 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
 
     int long_index, tmp;
     char *number;
+    commands->filename = NULL;
+    commands->save_filename = NULL;
+    commands->flag_command = 100;
     while ((tmp = getopt_long(argc, argv, short_options, long_options, &long_index)) != -1){
         switch (tmp){
             case 'h':
                 printHelp();
+                commands->flag_command = 4;
                 break;
             case 'I':
                 commands->filename = optarg;
@@ -100,49 +110,163 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                 commands->save_filename = optarg;
                 break;
             case 'i':
-                printf("Что-то интересненькое");
+                commands->flag_command = 5;
                 break;
             case 'C':
-                char *a;
-                a = strtok(optarg, '/');
-                int i = 0;
-                while (a != NULL){
-
+                // строка вида: X1,Y1/X2,Y2/X3,Y3
+                char *a_c = malloc(sizeof(char)*100);
+                a_c = strtok(optarg, "/,");
+                int coords_c[6];
+                for (int i = 0; i < 6; i++){
+                    if (a_c == NULL){
+                        puts("Error, you may have entered too few coordinates");
+                        exit(0);
+                    } 
+                    if (isNum(a_c)){
+                        coords_c[i] = atoi(a_c);
+                        a_c = strtok(NULL, "/,");
+                    }
+                    else{
+                        puts("Ошибка ввода");
+                        exit(0);
+                    }
                 }
+                commands->c_p1.x1 = coords_c[0];
+                commands->c_p1.y1 = coords_c[1];
+                commands->c_p2.x1 = coords_c[2];
+                commands->c_p2.y1 = coords_c[3];
+                commands->c_p.x1 = coords_c[4];
+                commands->c_p.y1 = coords_c[5];
+                commands->flag_command = 0;
+                free(a_c);
                 break;
             case 'f':
+                // строка вида: R/0 or G/0 or B/0 (or 255)
+                char *a_f = (char*)malloc(sizeof(char)*100);
+                a_f = strtok(optarg, "/,");
+                char A;
+                int B;
+                A = a_f[0];
+                a_f = strtok(NULL, "/");
+                if (isNum(a_f)){
+                    B = atoi(a_f);
+                }
+                else{
+                    puts("Ошибка ввода");
+                    exit(0);
+                }
+                commands->cg_parametr = A;
+                commands->cg_value = B;
+                commands->flag_command=3;
+                free(a_f);
                 break;
             case 'F':
+                // строка вида: R/G/B/R/G/B (of course, R, G, B are integer in range 0-255
+                char *a_F = malloc(sizeof(char)*100);
+                a_F = strtok(optarg, "/,");
+                int digits[6];
+                for (int i = 0; i < 6; i++){
+                    if (a_F == NULL){
+                        puts("Error, you may have entered too few coordinates");
+                        exit(0);
+                    } 
+
+                    if (isNum(a_F)){
+                        digits[i] = atoi(a_F);
+                        a_F = strtok(NULL, "/,");
+                    }
+                    else{
+                        puts("Ошибка ввода");
+                        exit(0);
+                    }
+                }
+                commands->flag_command = 2;
+                commands->rc_color_1.r = digits[0];
+                commands->rc_color_1.g = digits[1];
+                commands->rc_color_1.b = digits[2];
+                commands->rc_color_2.r = digits[3];
+                commands->rc_color_2.g = digits[4];
+                commands->rc_color_2.b = digits[5];
+                free(a_F);
                 break;
             case 'R':
+                // строка вида: X1/Y1/X2/Y2/X3/Y3/X4/Y4/X5/Y5
+                char *a_r = malloc(sizeof(char)*100);
+                a_r = strtok(optarg, "/,");
+                int coords_r[10];
+                for (int i = 0; i < 10; i++){
+                    if (a_r == NULL){
+                        puts("Error, you may have entered too few coordinates");
+                        exit(0);
+                    } 
+                    if (isNum(a_r)){
+                        coords_r[i] = atoi(a_r);
+                        a_r = strtok(NULL, "/,");
+                    }
+                    else{
+                        puts("Ошибка ввода");
+                        exit(0);
+                    }
+                }
+                commands->r_l.p1.x1 = coords_r[0];
+                commands->r_l.p1.y1 = coords_r[1];
+                commands->r_l.p2.x1 = coords_r[2];
+                commands->r_l.p2.y1 = coords_r[3];
+                commands->r_p1.x1 = coords_r[4];
+                commands->r_p1.y1 = coords_r[5];
+                commands->r_p2.x1 = coords_r[6];
+                commands->r_p2.y1 = coords_r[7];
+                commands->r_p.x1 = coords_r[8];
+                commands->r_p.y1 = coords_r[9];
+
+                commands->flag_command = 1;
+                free(a_r);
                 break;
             default:
-                fprintf("No such argument required [%c], read usage (-H or --help)\n");;
+                puts("No such argument required, read usage (-H or --help)");
+                exit(0);
         }
     }
 }
 
 
 int main(int argc, char** argv){
-    BMP img2 = openBMP("./Images/picture.bmp");
-    printHelp();
-    printf("%d\n", argc);
-    //replace(old, new, &img2);
-    Point p1 = {0, 100};
-    Point p2 = {100, 400};
-    Point p_1 = {0, 500};
-    Point p_2 = {400, 500};
-    Point p_ = {500, 700};
-    Line l = {p_1, p_2};
-    copy(&img2, p1, p2, p_);
-    //reflection(&img2, l, p1, p2);
-    printf("%d %d\n", img2.bmih.width, img2.bmih.height);
-    //printf("%d\n", img2.bmfh.pixelArrOffset);
-    saveBMP("./Images/result_2.bmp", img2);
- 
-    for (int i = 0; i < img2.bmih.height; i++){
-        free(img2.data[i]);
+    // BMP img2 = openBMP("./Images/picture.bmp");
+    usefullCommands * commands = malloc(sizeof(usefullCommands));
+    func_getopt(argc, argv, commands);
+    if (commands->flag_command == 4){
+        puts("You chose to see explanation");
     }
-    free(img2.data);
+    else if (commands->flag_command == 5){
+        puts("You chose to see information about the file");
+        if (commands->filename != NULL){
+            BMP file = openBMP(commands->filename);
+            printf("Filename:%s\n Files'size is %d(width) %d(height)\n The number of image pixels is %d\n", commands->filename, file.bmih.width, file.bmih.height,
+            file.bmih.width*file.bmih.height);
+        }
+    }
+    //else if (commands->flag_command == )
+
+    // //replace(old, new, &img2);
+    // Point p1 = {200, 600};
+    // Point p2 = {400, 700};
+    // Point p_1 = {0, 500};
+    // Point p_2 = {400, 500};
+    // Point p_ = {600, 900};
+    // Line l = {p_1, p_2};
+    // //copy(&img2, p1, p2, p_);
+    // reflection(&img2, l, p1, p2);
+    // printf("%d %d\n", img2.bmih.width, img2.bmih.height);
+    // printf("%d\n", img2.bmfh.pixelArrOffset);
+    // saveBMP("./Images/result_2.bmp", img2);
+    
+
+
+
+    // for (int i = 0; i < img2.bmih.height; i++){
+    //     free(img2.data[i]);
+    // }
+    // free(img2.data);
+    free(commands);
     return 0;
 }

@@ -70,6 +70,8 @@ void black_square(BMP* img, int H, int W){
 }
 
 
+
+
 BMP generateBMP(size_t W, size_t H, const char * color){
     BMP img;
     img.bmfh.signature = 0x4d42;
@@ -89,7 +91,6 @@ BMP generateBMP(size_t W, size_t H, const char * color){
     img.bmih.yPixelsPerMeter = 4700;
     img.bmih.colorsInColorTable = sizeof(char); // столько мы можем себе позволить
     img.bmih.importantColorCount = sizeof(char); // прикол
-
 
     if (strcmp(color, "red") == 0){
         red_square(&img, H, W);

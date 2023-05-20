@@ -11,7 +11,7 @@ void saveBMP(const char* path, BMP img){
     size_t W = img.bmih.width;
     size_t H = img.bmih.height;
 
-    for (size_t i = H-1; i != 0; i--){
+    for (size_t i = 0; i != H; i++){
         fwrite(img.data[i], sizeof(RGB)* W, 1, f);
     }
     fclose(f);
@@ -19,6 +19,10 @@ void saveBMP(const char* path, BMP img){
 
 BMP openBMP(const char* path){
     FILE* f = fopen(path, "rb");
+    if (f == NULL){
+        puts("The file was not found");
+        exit(0);
+    }
  
     BMP img;
  
@@ -29,7 +33,7 @@ BMP openBMP(const char* path){
     size_t H = img.bmih.height;
     
     img.data = (RGB**)malloc(sizeof(RGB*)*H);
-    for (size_t i = H-1; i != -1; i--){
+    for (size_t i = 0; i != H; i++){
         img.data[i] = (RGB *)malloc(sizeof(RGB) * W);
         fread(img.data[i], sizeof(RGB) * W, 1, f);
     }

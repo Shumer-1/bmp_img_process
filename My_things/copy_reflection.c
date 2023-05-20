@@ -1,10 +1,14 @@
 #include "copy_reflection.h"
 #include "draw.h"
 
-void copy(BMP* img, Point p1, Point p2, Point p_){
+#define BIAS 28 //смещение изображения
 
+void copy(BMP* img, Point p1, Point p2, Point p_){
     int w = p2.y1 - p1.y1 + 1;
     int h = p2.x1 - p1.x1 + 1;
+
+    p1.y1 = p1.y1+BIAS;
+    p_.y1 = p_.y1+BIAS;
 
     int x = p1.x1;
     int i = p_.x1;
@@ -12,7 +16,7 @@ void copy(BMP* img, Point p1, Point p2, Point p_){
         if (i == img->bmih.height || i - p_.x1 > h){
             break;
         }
-        int y = p1.y1+28;
+        int y = p1.y1;
         int j = p_.y1;
         while (j < img->bmih.width && j - p_.y1 <= w){
             img->data[i][j++] = img->data[x][y++];
@@ -20,17 +24,22 @@ void copy(BMP* img, Point p1, Point p2, Point p_){
         i++;
         x++;
     } 
-
-
 }
+
 
 void reflection(BMP* img, Line line, Point p1, Point p2){
     // запишем уравнение прямой
+    line.p1.y1+=BIAS;
+    line.p2.y1+=BIAS;
+    p1.y1+=BIAS;
+    p2.y1+=BIAS;
+
+
     Point new_p1; // нижняя левая точка (принцип зеркала)
     Point new_p2; // правая верхняя
     if (line.p1.x1 == line.p2.x1){ // горизонтальная
         Point pf;
-        pf.x1 = p2.x1 + 2* (line.p1.x1 - p2.x1);
+        pf.x1 = p2.x1 + 2 * (line.p1.x1 - p2.x1);
         pf.y1 = p1.y1;
         copy(img, p1, p2, pf);
         RGB color;
