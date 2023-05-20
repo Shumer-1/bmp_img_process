@@ -2,4 +2,4 @@
 
 #pragma once
 
-void filter(const char *component, int value, BMP* img);
+void filter(char component, int value, BMP* img);

@@ -63,7 +63,6 @@ typedef struct{
     Line r_l; // ось отражения
     Point r_p1; // первая точка (top left)
     Point r_p2; // вторая точка (bot right)
-    Point r_p; // новая точка (new top left)
     // copy
     Point c_p1; // первая точка старой области (old top left)
     Point c_p2; // вторая точка старой области (old bot right)
@@ -127,7 +126,12 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                         a_c = strtok(NULL, "/,");
                     }
                     else{
-                        puts("Ошибка ввода");
+                        puts("Error coordiantes");
+                        exit(0);
+                    }
+                    if ((i % 2 == 0 && (coords_c[i] > file.bmih.height || coords_c[i] < 0))
+                    || ((i % 2 == 1) && (coords_c[i] > file.bmih.width || coords_c[i] < 0))){
+                        puts("Error coordiantes");
                         exit(0);
                     }
                 }
@@ -152,7 +156,7 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                     B = atoi(a_f);
                 }
                 else{
-                    puts("Ошибка ввода");
+                    puts("Error coordiantes");
                     exit(0);
                 }
                 commands->cg_parametr = A;
@@ -173,10 +177,14 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
 
                     if (isNum(a_F)){
                         digits[i] = atoi(a_F);
+                        if (digits[i] > 255 && digits[i] < 0){
+                            puts("Error coordiantes");
+                            exit(0);
+                        }
                         a_F = strtok(NULL, "/,");
                     }
                     else{
-                        puts("Ошибка ввода");
+                        puts("Error coordiantes");
                         exit(0);
                     }
                 }
@@ -187,14 +195,15 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                 commands->rc_color_2.r = digits[3];
                 commands->rc_color_2.g = digits[4];
                 commands->rc_color_2.b = digits[5];
+                
                 free(a_F);
                 break;
             case 'R':
-                // строка вида: X1/Y1/X2/Y2/X3/Y3/X4/Y4/X5/Y5
+                // строка вида: X1/Y1/X2/Y2/X3/Y3/X4/Y4/
                 char *a_r = malloc(sizeof(char)*100);
                 a_r = strtok(optarg, "/,");
-                int coords_r[10];
-                for (int i = 0; i < 10; i++){
+                int coords_r[8];
+                for (int i = 0; i < 8; i++){
                     if (a_r == NULL){
                         puts("Error, you may have entered too few coordinates");
                         exit(0);
@@ -204,9 +213,15 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                         a_r = strtok(NULL, "/,");
                     }
                     else{
-                        puts("Ошибка ввода");
+                        puts("Error coordiantes");
                         exit(0);
                     }
+                    if ((i % 2 == 0 && (coords_r[i] > file.bmih.height || coords_r[i] < 0))
+                    || ((i % 2 == 1) && (coords_r[i] > file.bmih.width || coords_r[i] < 0))){
+                        puts("Error coordiantes");
+                        exit(0);
+                    }
+                    
                 }
                 commands->r_l.p1.x1 = coords_r[0];
                 commands->r_l.p1.y1 = coords_r[1];
@@ -216,8 +231,6 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                 commands->r_p1.y1 = coords_r[5];
                 commands->r_p2.x1 = coords_r[6];
                 commands->r_p2.y1 = coords_r[7];
-                commands->r_p.x1 = coords_r[8];
-                commands->r_p.y1 = coords_r[9];
 
                 commands->flag_command = 1;
                 free(a_r);
@@ -229,6 +242,7 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
     }
 }
 
+BMP file;
 
 int main(int argc, char** argv){
     // BMP img2 = openBMP("./Images/picture.bmp");
@@ -237,36 +251,80 @@ int main(int argc, char** argv){
     if (commands->flag_command == 4){
         puts("You chose to see explanation");
     }
-    else if (commands->flag_command == 5){
+    if (commands->flag_command == 5){
         puts("You chose to see information about the file");
         if (commands->filename != NULL){
-            BMP file = openBMP(commands->filename);
+            file = openBMP(commands->filename);
             printf("Filename:%s\n Files'size is %d(width) %d(height)\n The number of image pixels is %d\n", commands->filename, file.bmih.width, file.bmih.height,
             file.bmih.width*file.bmih.height);
         }
     }
-    //else if (commands->flag_command == )
+    if (commands->flag_command == 3){ //change
+        if (commands->cg_parametr == 'B' || commands->cg_parametr == 'R' || commands->cg_parametr == "G"){
+            if (commands->cg_value == 255 || commands->cg_value == 0){
+                if (commands->filename == NULL){
+                    puts("Ошибка ввода");
+                    exit(0);
+                }
+                filter(commands->cg_parametr, commands->cg_value, &file);
+                if (commands->save_filename != NULL){
+                    saveBMP(commands->save_filename, file);
+                }
+                else{
+                    puts("Output filename wasn`t given");
+                }
 
-    // //replace(old, new, &img2);
-    // Point p1 = {200, 600};
-    // Point p2 = {400, 700};
-    // Point p_1 = {0, 500};
-    // Point p_2 = {400, 500};
-    // Point p_ = {600, 900};
-    // Line l = {p_1, p_2};
-    // //copy(&img2, p1, p2, p_);
-    // reflection(&img2, l, p1, p2);
-    // printf("%d %d\n", img2.bmih.width, img2.bmih.height);
-    // printf("%d\n", img2.bmfh.pixelArrOffset);
-    // saveBMP("./Images/result_2.bmp", img2);
-    
-
-
-
-    // for (int i = 0; i < img2.bmih.height; i++){
-    //     free(img2.data[i]);
-    // }
-    // free(img2.data);
+            }
+            else{
+                puts("Ошибка ввода");
+                exit(0);
+            }
+        }
+        else{
+            puts("Ошибка ввода");
+            exit(0);
+        }
+    }
+    if (commands->flag_command == 2){//replace
+        if (commands->filename != NULL){
+            file = openBMP(commands->filename);  
+            replace(commands->rc_color_1, commands->rc_color_2, &file);
+            if (commands->save_filename){
+                saveBMP(commands->save_filename, file);
+            }
+        }
+        else{
+            puts("You didn`t give me filename");
+        }
+    }
+    if (commands->flag_command == 1){//reflect 
+        //тут полная жесть, проверки на все
+        if (commands->filename != NULL){
+            file = openBMP(commands->filename);    
+            reflection(&file, commands->r_l, commands->r_p1, commands->r_p2);
+            if (commands->save_filename != NULL){
+                saveBMP(commands->save_filename, file);
+            }
+        }
+        else{
+            puts("You didn`t give me filename");
+        }
+    }
+    if (commands->flag_command == 0){//copy
+        if (commands->filename){
+            file = openBMP(commands->filename);
+            copy(&file, commands->c_p1, commands->c_p2, commands->c_p);
+            if (commands->save_filename != NULL){
+                saveBMP(commands->save_filename, file);
+            }
+         }
+         else{
+            puts("You didn`t give me filename");
+         }
+    }
+    else{
+        puts("Nothing interesting");
+    }
     free(commands);
     return 0;
 }
