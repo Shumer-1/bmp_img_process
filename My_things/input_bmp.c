@@ -10,11 +10,20 @@ void saveBMP(const char* path, BMP img){
 
     size_t W = img.bmih.width;
     size_t H = img.bmih.height;
-
-    for (size_t i = 0; i != H; i++){
-        fwrite(img.data[i], sizeof(RGB)* W, 1, f);
+    if (img.bmih.bitsPerPixel == 24){
+        for (size_t i = 0; i != H; i++){
+            fwrite(img.data[i], sizeof(RGB)* W, 1, f);
+        }
+        fclose(f);
     }
-    fclose(f);
+    else if (img.bmih.bitsPerPixel == 32){
+        for (size_t i = 0; i != H; i++){
+            fwrite(img.data[i], sizeof(RGB)* W, 1, f);
+        }
+        fclose(f);
+    }
+
+    
 }
 
 BMP openBMP(const char* path){

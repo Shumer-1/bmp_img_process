@@ -6,21 +6,21 @@ void filter(char component, int value, BMP* img){
         return;
     }
     // здесь должна быть проверка, что компонент норм и value тоже
-    if (component == "R"){
+    if (component == 'R'){
         for (int i = 0; i < img->bmih.height; i++){
             for (int j = 0; j < img->bmih.width; j++){
                 img->data[i][j].r = value;
             }
         }
     }
-    else if ((component == "G")){
+    else if ((component == 'G')){
         for (int i = 0; i < img->bmih.height; i++){
             for (int j = 0; j < img->bmih.width; j++){
                 img->data[i][j].g = value;
             }
         }
     }
-    else if (component == "B"){
+    else if (component == 'B'){
         for (int i = 0; i < img->bmih.height; i++){
             for (int j = 0; j < img->bmih.width; j++){
                 img->data[i][j].b = value;

@@ -29,9 +29,10 @@ typedef struct{
 } BitmapInfoHeader; // это по факту третья версия БМП, тк поля аналогичные
 
 typedef struct{
-    unsigned char r;
-    unsigned char g;
     unsigned char b;
+    unsigned char g;
+    unsigned char r;
+    
 } RGB;
 
 typedef struct{

@@ -76,6 +76,7 @@ typedef struct{
 
 }usefullCommands;
 
+BMP file;
 
 Info func_getopt(int argc, char ** argv, usefullCommands* commands){
     // суть: передаем агрументы, первый сам ./main
@@ -113,6 +114,11 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                 break;
             case 'C':
                 // строка вида: X1,Y1/X2,Y2/X3,Y3
+                if (commands->filename == NULL){
+                    puts("Error, you didn't give me filename");
+                    exit(0);
+                }
+                file = openBMP(commands->filename);
                 char *a_c = malloc(sizeof(char)*100);
                 a_c = strtok(optarg, "/,");
                 int coords_c[6];
@@ -162,7 +168,7 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                 commands->cg_parametr = A;
                 commands->cg_value = B;
                 commands->flag_command=3;
-                free(a_f);
+                //free(a_f);
                 break;
             case 'F':
                 // строка вида: R/G/B/R/G/B (of course, R, G, B are integer in range 0-255
@@ -200,6 +206,11 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                 break;
             case 'R':
                 // строка вида: X1/Y1/X2/Y2/X3/Y3/X4/Y4/
+                if (commands->filename == NULL){
+                    puts("Error, you didn't give me filename");
+                    exit(0);
+                }
+                file = openBMP(commands->filename);
                 char *a_r = malloc(sizeof(char)*100);
                 a_r = strtok(optarg, "/,");
                 int coords_r[8];
@@ -242,10 +253,15 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
     }
 }
 
-BMP file;
+
 
 int main(int argc, char** argv){
-    // BMP img2 = openBMP("./Images/picture.bmp");
+    // BMP img2 = openBMP("./Images/strange.bmp");
+    // Point p1 = {50, 50};
+    // Point p2 = {100, 100};
+    // Point p_ = {110, 110};
+    // copy(&img2, p1, p2, p_);
+    // saveBMP("./Images/result_2.bmp", img2);
     usefullCommands * commands = malloc(sizeof(usefullCommands));
     func_getopt(argc, argv, commands);
     if (commands->flag_command == 4){
@@ -260,12 +276,13 @@ int main(int argc, char** argv){
         }
     }
     if (commands->flag_command == 3){ //change
-        if (commands->cg_parametr == 'B' || commands->cg_parametr == 'R' || commands->cg_parametr == "G"){
+        if (commands->cg_parametr == 'B' || commands->cg_parametr == 'R' || commands->cg_parametr == 'G'){
             if (commands->cg_value == 255 || commands->cg_value == 0){
                 if (commands->filename == NULL){
                     puts("Ошибка ввода");
                     exit(0);
                 }
+                file = openBMP(commands->filename);
                 filter(commands->cg_parametr, commands->cg_value, &file);
                 if (commands->save_filename != NULL){
                     saveBMP(commands->save_filename, file);
@@ -312,7 +329,6 @@ int main(int argc, char** argv){
     }
     if (commands->flag_command == 0){//copy
         if (commands->filename){
-            file = openBMP(commands->filename);
             copy(&file, commands->c_p1, commands->c_p2, commands->c_p);
             if (commands->save_filename != NULL){
                 saveBMP(commands->save_filename, file);
@@ -321,9 +337,6 @@ int main(int argc, char** argv){
          else{
             puts("You didn`t give me filename");
          }
-    }
-    else{
-        puts("Nothing interesting");
     }
     free(commands);
     return 0;
