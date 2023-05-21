@@ -37,7 +37,11 @@ BMP openBMP(const char* path){
  
     fread(&img.bmfh, sizeof(BitmapFileHeader), 1, f);
     fread(&img.bmih, sizeof(BitmapInfoHeader), 1, f);
- 
+    // исправление на 28 
+    // char * a = malloc(sizeof(char)*28);
+    // fread(&a, 28, 1, f);
+    // free(a);
+    // // конец
     size_t W = img.bmih.width;
     size_t H = img.bmih.height;
     if (img.bmih.bitsPerPixel == 24){

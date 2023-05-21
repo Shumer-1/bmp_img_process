@@ -11,8 +11,9 @@
 
 
 void printHelp(){
-    printf("So, general provisions. First you need to enter the name of the program, \nthen the short or long expressions indicated below. Commands must be typed on a line. Thank you. \nAnd all commands must have one of the main specificator: C, f, F, R\n\n");
-    printf("The origin of the coordinate system is in the lower right corner. That is, the point with coordinates (0,0) is the bottom right point.\n");
+    printf("So, general provisions. First you need to enter the name of the program, \nthen the short or long expressions indicated below. Commands must be typed on a line. Thank you. \nAnd all commands must have one of the main specificator: C, f, F, R, h.\n\n");
+    printf("Also, don't forget to include the names of the input file and the output file.\n");
+    printf("The origin of the coordinate system is in the lower left corner. That is, the point with coordinates (0,0) is the bottom left point.\n");
     printf("\nPlease enter correct coordinates. If the coordinates are incorrect, a hint will appear on the screen\n");
 
     printf("The following are the flags required to specify a job. Enter them in this format ./main -h or ./main -f R/255\n");
@@ -32,7 +33,7 @@ void printHelp(){
     printf("-F or --replace - old and new colors in format R/G/B/R/G/B (of course, R, G, B are integer in range 0-255\n");
 
     printf("\n\tTo reflect a given area:\n\n");
-    printf("-R or --reflect - coordinates of line points and area points in format X1/Y1/X2/Y2/X3/Y3/X4/Y4/X5/X6\n");
+    printf("-R or --reflect - coordinates of line points and area points in format X1/Y1/X2/Y2/X3/Y3/X4/Y4/X5/X6\n\n\n");
 };
 
 int isNum(char* str){
@@ -58,7 +59,7 @@ typedef struct{
     int err; // нормально - 0, ошибка - 1
     char* filename;
     char* save_filename;
-    int flag_command; // 0 - copy, 1 - reflect, 2 - replace, 3 - change
+    int flag_command; // 0 - copy, 1 - reflect, 2 - replace, 3 - change, 4 - информация, 5 - помощь, 100 - неправильный ввод
     // reflection
     Line r_l; // ось отражения
     Point r_p1; // первая точка (top left)
@@ -74,7 +75,7 @@ typedef struct{
     char cg_parametr; // буква параметра
     int cg_value; // 255 или 0
 
-}usefullCommands;
+} usefullCommands;
 
 BMP file;
 
@@ -126,7 +127,7 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                     if (a_c == NULL){
                         puts("Error, you may have entered too few coordinates");
                         exit(0);
-                    } 
+                    }
                     if (isNum(a_c)){
                         coords_c[i] = atoi(a_c);
                         a_c = strtok(NULL, "/,");
@@ -168,7 +169,7 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                 commands->cg_parametr = A;
                 commands->cg_value = B;
                 commands->flag_command=3;
-                //free(a_f);
+                free(a_f);
                 break;
             case 'F':
                 // строка вида: R/G/B/R/G/B (of course, R, G, B are integer in range 0-255
@@ -290,7 +291,6 @@ int main(int argc, char** argv){
                 else{
                     puts("Output filename wasn`t given");
                 }
-
             }
             else{
                 puts("Wrong values");
