@@ -256,14 +256,14 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
 
 
 int main(int argc, char** argv){
-    // BMP img2 = openBMP("./Images/strange.bmp");
-    // Point p1 = {50, 50};
-    // Point p2 = {100, 100};
-    // Point p_ = {110, 110};
-    // copy(&img2, p1, p2, p_);
-    // saveBMP("./Images/result_2.bmp", img2);
+
     usefullCommands * commands = malloc(sizeof(usefullCommands));
     func_getopt(argc, argv, commands);
+    if (commands->flag_command == 100){
+        puts("Wrong input parametrs");
+        free(commands);
+        exit(0);
+    }
     if (commands->flag_command == 4){
         puts("You chose to see explanation");
     }
@@ -271,15 +271,15 @@ int main(int argc, char** argv){
         puts("You chose to see information about the file");
         if (commands->filename != NULL){
             file = openBMP(commands->filename);
-            printf("Filename:%s\n Files'size is %d(width) %d(height)\n The number of image pixels is %d\n", commands->filename, file.bmih.width, file.bmih.height,
-            file.bmih.width*file.bmih.height);
+            printf("Filename:%s\n Pixel size is %d(width) %d(height)\n The number of image pixels is %d.\n File size is %d\n There are %d bits per pixel.\n" , commands->filename, file.bmih.width, file.bmih.height,
+            file.bmih.width*file.bmih.height, file.bmfh.filesize, file.bmih.bitsPerPixel);
         }
     }
     if (commands->flag_command == 3){ //change
         if (commands->cg_parametr == 'B' || commands->cg_parametr == 'R' || commands->cg_parametr == 'G'){
             if (commands->cg_value == 255 || commands->cg_value == 0){
                 if (commands->filename == NULL){
-                    puts("Ошибка ввода");
+                    puts("Input filename wasn`t given");
                     exit(0);
                 }
                 file = openBMP(commands->filename);
@@ -293,12 +293,12 @@ int main(int argc, char** argv){
 
             }
             else{
-                puts("Ошибка ввода");
+                puts("Wrong values");
                 exit(0);
             }
         }
         else{
-            puts("Ошибка ввода");
+            puts("Wrong values");
             exit(0);
         }
     }

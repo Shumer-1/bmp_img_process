@@ -36,6 +36,13 @@ typedef struct{
 } RGB;
 
 typedef struct{
+    unsigned char b;
+    unsigned char g;
+    unsigned char r;
+    unsigned char a;
+} RGBA;
+
+typedef struct{
     BitmapFileHeader bmfh;
     BitmapInfoHeader bmih;
     RGB** data;

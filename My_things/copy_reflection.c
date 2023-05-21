@@ -27,7 +27,7 @@ void copy(BMP* img, Point p1, Point p2, Point p_){
 }
 
 
-void reflection(BMP* img, Line line, Point p1, Point p2){
+void reflection_but_not_reflection(BMP* img, Line line, Point p1, Point p2){
     // запишем уравнение прямой
     line.p1.y1+=BIAS;
     line.p2.y1+=BIAS;
@@ -39,7 +39,7 @@ void reflection(BMP* img, Line line, Point p1, Point p2){
     Point new_p2; // правая верхняя
     if (line.p1.x1 == line.p2.x1){ // горизонтальная
         Point pf;
-        pf.x1 = p2.x1 + 2 * (line.p1.x1 - p2.x1);
+        pf.x1 = p2.x1 + 2 * (line.p1.x1 - p2.x1); 
         pf.y1 = p1.y1;
         copy(img, p1, p2, pf);
         RGB color;
@@ -61,5 +61,48 @@ void reflection(BMP* img, Line line, Point p1, Point p2){
     }
     else{
         puts("Прямая не горизонтальная и не вертикальная, такую приколдесу я еще не сделал");
+    }
+}
+
+
+
+void reflection(BMP* img, Line l, Point p1, Point p2){
+    Point mid;
+    p1.y1+=BIAS;
+    p2.y1+=BIAS;
+    l.p1.y1+=BIAS;
+    l.p2.y1+=BIAS;
+    mid.x1 = (l.p1.y1 - p1.y1);
+    mid.y1 = (l.p2.x1 - p1.x1);
+    RGB color;
+    color.r = 0;
+    color.b = 0;
+    color.g = 0; 
+    draw_line(img, l, color);
+    if (l.p1.x1 == l.p2.x1){ //горизонтальная
+        int j_refl;
+        int i_refl;
+        for (int i = p1.y1; i <= p2.y1; i++){
+            for (int j = p1.x1;j <= p2.x1; j++){
+                mid.x1 = l.p1.x1 - i; 
+                i_refl = 2 * mid.x1 + i;
+                j_refl = j;
+                RGB pixel = img->data[i][j];
+                img->data[i_refl][j_refl] = pixel;
+            } 
+        }
+    }
+    if (l.p1.y1 == l.p2.y1){
+        int j_refl;
+        int i_refl;
+        for (int i = p1.y1; i <= p2.y1; i++){
+            for (int j = p1.x1;j <= p2.x1; j++){
+                mid.y1 = l.p1.y1 - j;
+                i_refl = i;
+                j_refl = 2 * mid.y1 + j;
+                RGB pixel = img->data[i][j];
+                img->data[i_refl][j_refl] = pixel;
+            } 
+        }
     }
 }
