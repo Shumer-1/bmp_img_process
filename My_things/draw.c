@@ -17,3 +17,31 @@ void draw_line(BMP* img, Line line, RGB color){
         }
     }
 }
+
+
+void alg_draw(BMP*img, Point p1, Point p2){
+    int x1 = p2.x1;
+    int y1 = p2.y1;
+    int x0 = p1.x1;
+    int y0 = p1.y1;
+
+    int deltax = abs(x1 - x0);
+    int deltay = abs(y1 - y0);
+    int error = 0;
+    int deltaerr = (deltay + 1);
+    int y = y0;
+    int diry = y1 - y0;
+    if (diry > 0) 
+        diry = 1;
+    if (diry < 0)
+        diry = -1;
+    for (int x = x0; x < x1; x++){
+        RGB color = {255, 0, 0};
+        img->data[x][y] = color;
+        error = error + deltaerr;
+        if (error >= (deltax + 1)){
+            y = y + diry;
+            error = error - (deltax + 1);
+        }
+    }
+}

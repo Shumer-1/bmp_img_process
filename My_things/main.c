@@ -19,7 +19,7 @@ void printHelp(){
     printf("The following are the flags required to specify a job. Enter them in this format ./main -h or ./main -f R/255\n");
     
     printf("-h or --help - to read this message)\n");
-    printf("-I or --input - to open file\n");
+    printf("-I or --input - to open file (Please enter a filename first)\n");
     printf("-S or --save - to save file\n");
     printf("-i or --info - to see general information about picture \n");
 
@@ -169,7 +169,7 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                 commands->cg_parametr = A;
                 commands->cg_value = B;
                 commands->flag_command=3;
-                free(a_f);
+                //free(a_f);
                 break;
             case 'F':
                 // строка вида: R/G/B/R/G/B (of course, R, G, B are integer in range 0-255
@@ -248,7 +248,7 @@ Info func_getopt(int argc, char ** argv, usefullCommands* commands){
                 free(a_r);
                 break;
             default:
-                puts("No such argument required, read usage (-H or --help)");
+                puts("No such argument required");
                 exit(0);
         }
     }
@@ -272,8 +272,8 @@ int main(int argc, char** argv){
         puts("You chose to see information about the file");
         if (commands->filename != NULL){
             file = openBMP(commands->filename);
-            printf("Filename:%s\n Pixel size is %d(width) %d(height)\n The number of image pixels is %d.\n File size is %d\n There are %d bits per pixel.\n" , commands->filename, file.bmih.width, file.bmih.height,
-            file.bmih.width*file.bmih.height, file.bmfh.filesize, file.bmih.bitsPerPixel);
+            printf("Filename:%s\n Pixel size is %d(width) %d(height)\n The number of image pixels is %d.\n File size is %d\n There are %d bits per pixel.\n Signature is %d\n And ImageSize is %d.\nBGR color encoding format, 8 bits per color\n" , commands->filename, file.bmih.width, file.bmih.height,
+            file.bmih.width*file.bmih.height, file.bmfh.filesize, file.bmih.bitsPerPixel, file.bmfh.signature, file.bmih.imageSize);
         }
     }
     if (commands->flag_command == 3){ //change
@@ -283,6 +283,7 @@ int main(int argc, char** argv){
                     puts("Input filename wasn`t given");
                     exit(0);
                 }
+
                 file = openBMP(commands->filename);
                 filter(commands->cg_parametr, commands->cg_value, &file);
                 if (commands->save_filename != NULL){
@@ -339,5 +340,8 @@ int main(int argc, char** argv){
          }
     }
     free(commands);
+    // Point p1 = {200, 200};
+    // Point p2 = {700, 700};
+    // //alg_draw(&file, p1, p2);
     return 0;
 }

@@ -12,7 +12,7 @@ typedef struct{
     unsigned short reserved1; // зарезервированно, должно быть равно 0
     unsigned short reserved2; // зарезервированно, должно быть равно 0
     unsigned int pixelArrOffset; // смещение данных изображения от начала файла в байтах (то есть байтики до начала пикселей)
-} BitmapFileHeader;
+} BitmapFileHeader; // для всех версий один
 
 typedef struct{
     unsigned int headerSize; // размер структуры в байтах, 
@@ -28,6 +28,58 @@ typedef struct{
     unsigned int importantColorCount; // Количество важных цветов (0 - все цвета важны)
 } BitmapInfoHeader; // это по факту третья версия БМП, тк поля аналогичные
 
+typedef struct tagFXPT2DOT30 {
+    int fract:30;  // Дробная часть числа
+    int value:2;   // Целая часть числа
+} FXPT2DOT30;
+typedef struct tagFXPT230 {
+    int fract:30;  // Дробная часть числа
+    int value:2;   // Целая часть числа
+} FXPT230;
+
+typedef struct tagCIYZ {
+    FXPT230 ciexyzX;  // Координата X в цветом пространств CIEXYZ
+    FXPT2DOT30 ciexyz;  // Координата Y в цветовом пространстве CIEXYZ
+    FXPT2DOT30 ciexyzZ;  // Координата Z в цветовом пространстве CIEXYZ
+} CIEXYZ;
+
+typedef struct tagCIEXYZTRIPLE {
+    CIEXYZ ciexyzRed;    // Координаты точки в цветовом пространстве CIEXYZ для красного цвета
+    CIEXYZ ciexyzGreen;  // Координаты точки в цветовом пространстве CIEXYZ для зеленого цвета
+    CIEXYZ ciexyzBlue;   // Координаты точки в цветовом пространстве CIEXYZ для синего цвета
+} CIEXYZTRIPLE;
+
+typedef struct
+{
+    unsigned int headerSize;
+    unsigned int width;
+    unsigned int height;
+    unsigned short planes;
+    unsigned short bitsPerPixel;
+    unsigned int compression;
+    unsigned int imageSize;
+    unsigned int xPixelsPerMeter;
+    unsigned int yPixelsPerMeter;
+    unsigned int colorsInColorTable;
+    unsigned int importantColorCount;
+    // V4 structure fields
+    unsigned int RedMask;
+    unsigned int GreenMask;
+    unsigned int BlueMask;
+    unsigned int AlphaMask;
+    unsigned int CSType;
+    CIEXYZTRIPLE Endpoints;
+    unsigned int GammaRed;
+    unsigned int GammaGreen;
+    unsigned int GammaBlue;
+    // V5 structure fields
+    unsigned int Intent;
+    unsigned int ProfileData;
+    unsigned int ProfileSize;
+    unsigned int Reserved;
+} BitmapV5Header;             // 124 bytes
+
+
 typedef struct{
     unsigned char b;
     unsigned char g;
@@ -40,7 +92,16 @@ typedef struct{
     unsigned char g;
     unsigned char r;
     unsigned char a;
+    
 } RGBA;
+
+
+typedef struct BMP5
+{
+    BitmapFileHeader bmfh; // 14 bytes
+    BitmapV5Header bmih;   // 124 bytes
+    RGBA** data;            // 8 bytes
+} BMP5;  
 
 typedef struct{
     BitmapFileHeader bmfh;
