@@ -6,7 +6,13 @@
 void copy(BMP* img, Point p1, Point p2, Point p_){
     int w = p2.y1 - p1.y1 + 1;
     int h = p2.x1 - p1.x1 + 1;
-
+    RGB ** new = malloc(sizeof(RGB*)*img->bmih.height);
+    for (int i = 0; i < img->bmih.height; i++){
+        new[i] = malloc(sizeof(RGB)*img->bmih.width);
+        for (int j = 0; j < img->bmih.width; j++){
+            new[i][j] = img->data[i][j];
+        }
+    }
     p1.y1 = p1.y1+BIAS;
     p_.y1 = p_.y1+BIAS;
 
@@ -19,50 +25,54 @@ void copy(BMP* img, Point p1, Point p2, Point p_){
         int y = p1.y1;
         int j = p_.y1;
         while (j < img->bmih.width && j - p_.y1 <= w){
-            img->data[i][j++] = img->data[x][y++];
+            img->data[i][j++] = new[x][y++];
         }
         i++;
         x++;
     }
+    for (int i = 0; i < img->bmih.height; i++){
+            free(new[i]);
+    }
+    free(new);
 }
 
 
-void reflection_but_not_reflection(BMP* img, Line line, Point p1, Point p2){
-    // запишем уравнение прямой
-    line.p1.y1+=BIAS;
-    line.p2.y1+=BIAS;
-    p1.y1+=BIAS;
-    p2.y1+=BIAS;
+// void reflection_but_not_reflection(BMP* img, Line line, Point p1, Point p2){
+//     // запишем уравнение прямой
+//     line.p1.y1+=BIAS;
+//     line.p2.y1+=BIAS;
+//     p1.y1+=BIAS;
+//     p2.y1+=BIAS;
 
 
-    Point new_p1; // нижняя левая точка (принцип зеркала)
-    Point new_p2; // правая верхняя
-    if (line.p1.x1 == line.p2.x1){ // горизонтальная
-        Point pf;
-        pf.x1 = p2.x1 + 2 * (line.p1.x1 - p2.x1); 
-        pf.y1 = p1.y1;
-        copy(img, p1, p2, pf);
-        RGB color;
-        color.r = 0;
-        color.b = 0;
-        color.g = 0; 
-        draw_line(img, line, color);
-    }
-    else if (line.p1.y1 == line.p2.y1){// вертикальная
-        Point pf;
-        pf.x1 = p1.x1;
-        pf.y1 = p2.y1 + 2* (line.p1.y1 - p2.y1);
-        copy(img, p1, p2, pf);
-        RGB color;
-        color.r = 0;
-        color.b = 0;
-        color.g = 0; 
-        draw_line(img, line, color);
-    }
-    else{
-        puts("Прямая не горизонтальная и не вертикальная, такую приколдесу я еще не сделал");
-    }
-}
+//     Point new_p1; // нижняя левая точка (принцип зеркала)
+//     Point new_p2; // правая верхняя
+//     if (line.p1.x1 == line.p2.x1){ // горизонтальная
+//         Point pf;
+//         pf.x1 = p2.x1 + 2 * (line.p1.x1 - p2.x1); 
+//         pf.y1 = p1.y1;
+//         copy(img, p1, p2, pf);
+//         RGB color;
+//         color.r = 0;
+//         color.b = 0;
+//         color.g = 0; 
+//         draw_line(img, line, color);
+//     }
+//     else if (line.p1.y1 == line.p2.y1){// вертикальная
+//         Point pf;
+//         pf.x1 = p1.x1;
+//         pf.y1 = p2.y1 + 2* (line.p1.y1 - p2.y1);
+//         copy(img, p1, p2, pf);
+//         RGB color;
+//         color.r = 0;
+//         color.b = 0;
+//         color.g = 0; 
+//         draw_line(img, line, color);
+//     }
+//     else{
+//         puts("Прямая не горизонтальная и не вертикальная, такую приколдесу я еще не сделал");
+//     }
+// }
 
 
 
