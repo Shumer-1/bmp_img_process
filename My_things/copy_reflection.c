@@ -23,7 +23,7 @@ void copy(BMP* img, Point p1, Point p2, Point p_){
         }
         i++;
         x++;
-    } 
+    }
 }
 
 

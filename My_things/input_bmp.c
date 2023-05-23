@@ -5,6 +5,10 @@
 
 void saveBMP(const char* path, BMP img){
     FILE * f = fopen(path, "wb"); // байтовая запись
+    if (f == NULL){
+        puts("The file was not found");
+        exit(0);
+    }
     fwrite(&img.bmfh, sizeof(BitmapFileHeader), 1, f);
     fwrite(&img.bmih, sizeof(BitmapInfoHeader), 1, f);
 

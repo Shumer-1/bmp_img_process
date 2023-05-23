@@ -20,7 +20,7 @@ void printHelp(){
     
     printf("-h or --help - to read this message)\n");
     printf("-I or --input - to open file (Please enter a filename first)\n");
-    printf("-S or --save - to save file\n");
+    printf("-O or --save - to save file\n");
     printf("-i or --info - to see general information about picture \n");
 
     printf("\n\tTo copy a area:\n\n");
@@ -33,8 +33,9 @@ void printHelp(){
     printf("-F or --replace - old and new colors in format R/G/B/R/G/B (of course, R, G, B are integer in range 0-255\n");
 
     printf("\n\tTo reflect a given area:\n\n");
-    printf("-R or --reflect - coordinates of line points and area points in format X1/Y1/X2/Y2/X3/Y3/X4/Y4/X5/X6\n\n\n");
-};
+    printf("-R or --reflect - coordinates of line points and area points in format X1/Y1/X2/Y2/X3/Y3/X4/Y4/X5/X6, \nwhereThe first two pairs of coordinates are the points of the line, the rest are the coordinates of the areas \n\n\n");
+    printf("Attention. If you do not enter the name of the file in which you want to save the result, the result will disappear.\n\n");
+}
 
 int isNum(char* str){
     if (!str){
